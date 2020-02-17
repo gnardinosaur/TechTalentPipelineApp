@@ -1,25 +1,80 @@
 import React from 'react';
-import { Button, Form, Segment, Container } from 'semantic-ui-react'
+import { Button, Form, Segment, Container, Message } from 'semantic-ui-react'
 
 
-function SignIn(){
-  return (
-    <Container className='sign-in-container'>
-      <Segment placeholder>
-        <h1>Sign In</h1>
-        <br />
-        <Form>
-          <Form.Field>
-            <input name='email' placeholder='email...' />
-          </Form.Field>
-          <Form.Field>
-            <input name='password' type='password' placeholder='password...' />
-          </Form.Field>
-          <Button>Sign In</Button>
-        </Form>
-      </Segment>
-    </Container>
-  )
+class SignIn extends React.Component {
+
+  state = {
+    user: {
+      email: '',
+      password: ''
+    },
+    error: false,
+    message: ''
+  };
+
+  handleChange = (e) => {
+    this.setState({
+      user: {
+        ...this.state.user,
+        [e.target.name]: e.target.value
+      },
+      error: false
+    })
+  };
+
+  validateUser = () => {
+    fetch('http://localhost:3000/api/v1/users/sign_in', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        user: this.state.user
+      })
+    })
+    .then(resp => resp.json())
+    .then(data => {
+      if(data.status === 'OK') {
+        //set user in App's state
+        this.props.setUser(data.user)
+        //redirect to Portfolio page
+        this.props.history.push('/portfolio')
+      } else {
+        //render error message
+        this.setState({ 
+          error: true,
+          message: data.message
+         })
+      }
+    })
+  }
+
+  render(){
+    return (
+      <Container className='sign-in-container'>
+        <Segment placeholder>
+          <h1>Sign In</h1>
+          <br />
+          <Form error={this.state.error}>
+            <Form.Field onChange={this.handleChange}>
+              <input name='email' placeholder='email...' />
+            </Form.Field>
+            <Form.Field onChange={this.handleChange}>
+              <input name='password' type='password' placeholder='password...' />
+            </Form.Field>
+            <Button onClick={this.validateUser}>Sign In</Button>
+            <Message
+                error
+                header='Please correct errors:'
+                content={this.state.message}
+            />
+          </Form>
+        </Segment>
+      </Container>
+    )
+  }
 };
 
 export default SignIn;

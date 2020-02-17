@@ -12,7 +12,20 @@ class Api::V1::UsersController < ApplicationController
       @user.save
       render json: { user: UserSerializer.new(@user), status: 'OK' }
     else 
-      render json: { status: 'ERROR', message: @user.errors.full_messages }
+      render json: { status: 'ERROR', messages: @user.errors.full_messages }
+    end 
+  end
+
+  def sign_in
+    if User.find_by(email: user_params[:email])
+      @user = User.find_by(email: user_params[:email])
+      if @user.password === user_params[:password]
+        render json: { user: UserSerializer.new(@user), status: 'OK' }
+      else 
+        render json: { status: 'ERROR', message: 'Email and Password do not match - please try again.' }
+      end
+    else 
+      render json: { status: 'ERROR', message: 'Not a valid Email - please try again.' }
     end 
   end
 
