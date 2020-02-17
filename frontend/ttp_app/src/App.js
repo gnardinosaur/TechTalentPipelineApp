@@ -1,33 +1,37 @@
 import React from 'react';
 import './App.css';
-import { Container, Button, Form, Divider, Segment } from 'semantic-ui-react'
+import { Switch, Route } from 'react-router-dom';
+import Register from './components/Register';
+import SignIn from './components/SignIn';
+import Transactions from './components/Transactions';
+import Portfolio from './components/Portfolio';
 
+class App extends React.Component {
 
-function App(props) {
-  return (
-    <div className="App">
-      <Container className="welcome-container">
-        <Segment placeholder>
-          <h1>Register</h1>
-          <br />
-          <Form>
-            <Form.Field>
-              <input name="name" placeholder="name..." />
-            </Form.Field>
-            <Form.Field>
-              <input name="email" placeholder="email..." />
-            </Form.Field>
-            <Form.Field>
-              <input name="password" type="password" placeholder="password..." />
-            </Form.Field>
-            <Button>Register</Button>
-          </Form>
-        </Segment>
-          <Divider horizontal>Or</Divider>
-        <Button onClick={() => props.history.push('/sign_in')} >Sign In</Button>
-      </Container>
-    </div>
-  );
-}
+  state = {
+    user: {
+      name: '',
+      email: '',
+      cash: 0
+    }
+  };
+
+  setUser = (user) => {
+    this.setState({ user })
+  }
+
+  render(){
+    return (
+      <div className='App'>
+        <Switch>
+          <Route path='/sign_in' render={(routerProps) => <SignIn {...routerProps} user={this.state.user} setUser={this.setUser} />} />
+          <Route path='/portfolio' component={Portfolio} />
+          <Route path='/transactions' component={Transactions} />
+          <Route path='/' render={(routerProps) => <Register {...routerProps} user={this.state.user} setUser={this.setUser} />} />
+        </Switch>
+      </div>
+    )
+  };
+};
 
 export default App;
