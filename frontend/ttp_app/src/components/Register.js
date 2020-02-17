@@ -42,7 +42,7 @@ class Register extends React.Component {
         //redirect to Portfolio page
         this.props.history.push('/portfolio')
       } else {
-        //render error message
+        //render error message(s)
         this.setState({ 
           error: true,
           messages: data.messages
@@ -63,7 +63,7 @@ class Register extends React.Component {
         <Segment placeholder>
           <h1>Register</h1>
           <br />
-          <Form error={this.state.error} >
+          <Form error={this.state.error} onSubmit={this.createUser}>
             <Form.Field onChange={this.handleChange}>
               <input name='name' placeholder='name...' />
             </Form.Field>
@@ -73,7 +73,7 @@ class Register extends React.Component {
             <Form.Field onChange={this.handleChange}>
               <input name='password' type='password' placeholder='password...' />
             </Form.Field>
-            <Button onClick={this.createUser}>Register</Button>
+            <Button type='submit'>Register</Button>
             {/* error messages */}
             <Message
                 error

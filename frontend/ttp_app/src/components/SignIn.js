@@ -42,7 +42,7 @@ class SignIn extends React.Component {
         //redirect to Portfolio page
         this.props.history.push('/portfolio')
       } else {
-        //render error message
+        //render appropriate error message
         this.setState({ 
           error: true,
           message: data.message
@@ -57,14 +57,14 @@ class SignIn extends React.Component {
         <Segment placeholder>
           <h1>Sign In</h1>
           <br />
-          <Form error={this.state.error}>
+          <Form error={this.state.error} onSubmit={this.validateUser}>
             <Form.Field onChange={this.handleChange}>
               <input name='email' placeholder='email...' />
             </Form.Field>
             <Form.Field onChange={this.handleChange}>
               <input name='password' type='password' placeholder='password...' />
             </Form.Field>
-            <Button onClick={this.validateUser}>Sign In</Button>
+            <Button type='submit'>Sign In</Button>
             <Message
                 error
                 header='Please correct errors:'
