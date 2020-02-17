@@ -7,7 +7,13 @@ class Api::V1::UsersController < ApplicationController
 
   def create 
     @user = User.create(user_params)
-    render json: @user
+    if @user.valid?
+      @user.cash = 5000
+      @user.save
+      render json: { user: UserSerializer.new(@user), status: 'OK' }
+    else 
+      render json: { status: 'ERROR', message: @user.errors.full_messages }
+    end 
   end
 
   private 
