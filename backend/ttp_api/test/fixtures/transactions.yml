@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  ticker: MyString
+  num_shares: 1
+  price: 1
+  user: one
+
+two:
+  ticker: MyString
+  num_shares: 1
+  price: 1
+  user: two
