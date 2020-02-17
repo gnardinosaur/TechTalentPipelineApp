@@ -2,12 +2,23 @@ import React from 'react';
 import { Header, List, Container, Grid, Form, Button} from 'semantic-ui-react';
 
 class Portfolio extends React.Component {
+
+  state = {
+
+  };
+
+  componentDidMount = () => {
+    fetch('http://localhost:3000/api/v1/stocks')
+    .then(resp => resp.json())
+    .then(data => console.log(data))
+  };
+
   render(){
     return (
       <Container className='portfolio'>
         <List as='a' divided={true} horizontal floated='right'>
           <List.Item disabled={true} content={<u>Portfolio</u>} />
-          <List.Item content={<u>Transactions</u>} />
+          <List.Item id='trans-link' onClick={() => this.props.history.push('/transactions')}content={<u>Transactions</u>} />
         </List>
         <br />
 
@@ -29,7 +40,7 @@ class Portfolio extends React.Component {
                   <input name='ticker' placeholder='Ticker' />
                 </Form.Field>
                 <Form.Field>
-                  <input name='qty' placeholder='Qty' />
+                  <input name='qty' type='number' min={0} placeholder='Qty' />
               </Form.Field>
               <Button className='buy-btn' type='submit'>Buy</Button>
               </Form>

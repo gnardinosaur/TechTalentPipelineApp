@@ -4,6 +4,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :users, only: [:create, :index]
       post 'users/sign_in', to: 'users#sign_in'
+      get 'stocks', to: 'stocks#fetch'
       resources :transactions
     end
   end
