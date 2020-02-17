@@ -12,3 +12,12 @@
   width: 50%;
   margin-top: 10%;
 }
+
+.ui.container.portfolio {
+  margin-top: 10%;
+  width: 65%;
+}
+
+.buy-btn {
+  width: 100%
+}
