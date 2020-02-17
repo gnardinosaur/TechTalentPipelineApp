@@ -9,7 +9,8 @@ class Register extends React.Component {
       email: '',
       password: ''
     },
-    error: false
+    error: false,
+    messages: []
   }
 
   handleChange = (e) => {
@@ -19,14 +20,14 @@ class Register extends React.Component {
         [e.target.name]: e.target.value,
       },
       error: false
-    });
+    })
   };
 
   createUser = () => {
     fetch('http://localhost:3000/api/v1/users', {
       method: 'POST',
       headers: {
-        'Content-Type' : 'application/json',
+        'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
       body: JSON.stringify({
@@ -42,13 +43,21 @@ class Register extends React.Component {
         this.props.history.push('/portfolio')
       } else {
         //render error message
-        this.setState({ error: true })
+        this.setState({ 
+          error: true,
+          messages: data.messages
+         })
       }
     })
   }
 
   render(){
-    console.log(this.state)
+    let messages;
+    
+    if(this.state.error){
+      messages = this.state.messages.map(el => <li>{el}</li>)
+    };
+
     return (
       <Container className='welcome-container'>
         <Segment placeholder>
@@ -58,11 +67,6 @@ class Register extends React.Component {
             <Form.Field onChange={this.handleChange}>
               <input name='name' placeholder='name...' />
             </Form.Field>
-              <Message
-                error
-                header='Invalid Name'
-                content='Name has aready been taken, please try another.' 
-              />
             <Form.Field onChange={this.handleChange}>
               <input name='email' placeholder='email...' />
             </Form.Field>
@@ -70,6 +74,12 @@ class Register extends React.Component {
               <input name='password' type='password' placeholder='password...' />
             </Form.Field>
             <Button onClick={this.createUser}>Register</Button>
+            {/* error messages */}
+            <Message
+                error
+                header='Please correct errors:'
+                content={messages}
+            />
           </Form>
         </Segment>
           <Divider horizontal>Or</Divider>
