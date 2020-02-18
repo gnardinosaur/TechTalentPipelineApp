@@ -18,10 +18,15 @@
   width: 65%;
 }
 
+.ui.container.transactions {
+  margin-top: 10%;
+  width: 65%;
+}
+
 .buy-btn {
   width: 100%
 }
 
-#trans-link {
+#nav-link {
   cursor: pointer;
 }
