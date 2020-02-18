@@ -5,4 +5,10 @@ const formatter = new Intl.NumberFormat('en-US', {
   minimumFractionDigits: 2
 });
 
-export { formatter }
+function convertStringToNum(string){
+  const number = Number(string.replace(/[^0-9.-]+/g,""))
+  return number
+}
+
+
+export { formatter, convertStringToNum }

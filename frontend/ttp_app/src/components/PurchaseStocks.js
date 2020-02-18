@@ -38,14 +38,15 @@ class PurchaseStocks extends React.Component {
     const totalPurchasePrice = formatter.format(this.state.buy.qty * stockPrice);
     
     if(totalPurchasePrice < this.props.user.cash) {
-      this.purchaseStock()
+      this.purchaseStock(stockPrice);
+      //update user cash total in App's state 
+      this.props.decreaseCash(totalPurchasePrice);
     } else {
       this.setState({ error: true })
     }
   }
 
-  purchaseStock = () => {
-    const stockPrice = this.props.currentPrices[this.state.buy.ticker];
+  purchaseStock = (stockPrice) => {
     fetch('http://localhost:3000/api/v1/transactions',{
       method: 'POST',
       headers: {

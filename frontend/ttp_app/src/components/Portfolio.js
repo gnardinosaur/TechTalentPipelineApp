@@ -6,17 +6,17 @@ import { Header, List, Container, Grid } from 'semantic-ui-react';
 class Portfolio extends React.Component {
 
   state = {
-    stocks: {}
+    stocksObject: {},
+    stocksLoaded: false
   }
 
   componentDidMount(){
     fetch('http://localhost:3000/api/v1/stocks')
     .then(resp => resp.json())
-    .then(stocksObject => this.saveStockData(stocksObject))
-  };
-
-  saveStockData = (stocksObject) => {
-    this.setState({ stocks: stocksObject });
+    .then(stocksObject => this.setState({ 
+      stocksObject,
+      stocksLoaded: true
+    }))
   };
 
   render(){
@@ -35,11 +35,11 @@ class Portfolio extends React.Component {
           <Grid.Row>
             <Grid.Column>
               {/* list of user's stocks/transactions here */}
-              <UserStocks user={this.props.user} currentPrices={this.state.stocks} />
+              {this.state.stocksLoaded && <UserStocks user={this.props.user} currentPrices={this.state.stocksObject} />}
             </Grid.Column>
             <Grid.Column width={5}>
               {/* stock purchase form here */}
-              <PurchaseStocks user={this.props.user} currentPrices={this.state.stocks} />
+              {this.state.stocksLoaded && <PurchaseStocks user={this.props.user} currentPrices={this.state.stocksObject} decreaseCash={this.props.decreaseCash}/>}
             </Grid.Column>
           </Grid.Row>
         </Grid>

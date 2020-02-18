@@ -1,5 +1,6 @@
 import React from 'react';
-import { List, Container, Grid } from 'semantic-ui-react';
+import { List, Container, Grid, Header } from 'semantic-ui-react';
+import { formatter } from '../constants/formatCurrency';
 
 class UserStocks extends React.Component {
 
@@ -17,32 +18,34 @@ class UserStocks extends React.Component {
   buildUserStockObject = () => {
     //create a simple object of ticker: number of shares
     const tickersAndQtyObject = {};
-    [...this.state.userStocks].forEach(el => {
+    this.state.userStocks.forEach(el => {
       if(tickersAndQtyObject[el.ticker]){
         tickersAndQtyObject[el.ticker] += el.num_shares
       } else {
-        tickersAndQtyObject[el.ticker] = el.num_shares
+        tickersAndQtyObject[el.ticker] = el.num_shares;
       }
     })
-    //convert the object back to an array with summed up number of shares 
+    // convert the object back to an array with summed up number of shares 
     const summedArray = Object.entries(tickersAndQtyObject)
     this.setState({ summedArray })
   }
 
   render(){
-    const stockList = this.state.summedArray.map(el => {
+    console.log('props', this.props.currentPrices)
+    console.log('state', this.state.summedArray)
+    const stockList = this.state.summedArray.map((el, index) => {
       return (
-        <List.Item>
-        <Grid columns={3} divided >
+        <List.Item key={index}>
+        <Grid columns={3} divided>
           <Grid.Row>
             <Grid.Column>
-              {el[0]}
+              <Header as='h4'>{el[0]}</Header>
             </Grid.Column>
             <Grid.Column>
               {el[1]} Shares
             </Grid.Column>
             <Grid.Column>
-              current price placeholder
+              {formatter.format(this.props.currentPrices[el[0]] * el[1])}
             </Grid.Column>
           </Grid.Row>
         </Grid>
