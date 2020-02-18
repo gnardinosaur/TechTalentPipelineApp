@@ -25,8 +25,8 @@ class App extends React.Component {
       <div className='App'>
         <Switch>
           <Route path='/sign_in' render={(routerProps) => <SignIn {...routerProps} user={this.state.user} setUser={this.setUser} />} />
-          <Route path='/portfolio' render={()  => <Portfolio user={this.state.user} />} />
-          <Route path='/transactions' component={Transactions} />
+          <Route path='/portfolio' render={(routerProps)  => <Portfolio user={this.state.user} {...routerProps} />} />
+          <Route path='/transactions' render={(routerProps) => <Transactions {...routerProps} />} />
           <Route path='/' render={(routerProps) => <Register {...routerProps} user={this.state.user} setUser={this.setUser} />} />
         </Switch>
       </div>

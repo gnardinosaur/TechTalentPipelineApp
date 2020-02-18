@@ -6,9 +6,8 @@ class Api::V1::TransactionsController < ApplicationController
   end
 
   def create 
-    byebug
-    # @transaction = Transaction.create(ticker: params[:ticker], num_share: params[:num_shares], price: params[:price])
-    # render json: @transaction
+    @transaction = Transaction.create(ticker: params[:stock][:ticker], num_shares: params[:stock][:qty], price: params[:price], user_id: params[:user_id])
+    render json: @transaction
   end
 
 end
