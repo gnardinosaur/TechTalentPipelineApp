@@ -5,7 +5,7 @@ import Register from './components/Register';
 import SignIn from './components/SignIn';
 import Transactions from './components/Transactions';
 import Portfolio from './components/Portfolio';
-import { convertStringToNum } from './constants/formatCurrency';
+// import { convertStringToNum } from './constants/formatCurrency';
 
 class App extends React.Component {
 
@@ -22,14 +22,28 @@ class App extends React.Component {
   }
 
   decreaseCash = (totalPurchasePrice) => {
-    const newBalance = parseInt(this.state.user.cash) - convertStringToNum(totalPurchasePrice)
-    debugger;
+    const newBalance = parseInt(this.state.user.cash) - totalPurchasePrice
     this.setState({ 
       user: {
         ...this.state.user,
         cash: newBalance
       }
-    }, () => console.log(this.state))
+    }, () => this.persistNewBalance(newBalance))
+  };
+
+  persistNewBalance = (newBalance) => {
+    fetch(`http://localhost:3000/api/v1/users/${this.state.user.id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        user: {
+          cash: newBalance
+        }
+      })
+    })
   }
 
   render(){
@@ -38,7 +52,7 @@ class App extends React.Component {
         <Switch>
           <Route path='/sign_in' render={(routerProps) => <SignIn {...routerProps} user={this.state.user} setUser={this.setUser} />} />
           <Route path='/portfolio' render={(routerProps)  => <Portfolio user={this.state.user} {...routerProps} decreaseCash={this.decreaseCash} />} />
-          <Route path='/transactions' render={(routerProps) => <Transactions {...routerProps} />} />
+          <Route path='/transactions' render={(routerProps) => <Transactions {...routerProps} user={this.state.user} />} />
           <Route path='/' render={(routerProps) => <Register {...routerProps} user={this.state.user} setUser={this.setUser} />} />
         </Switch>
       </div>

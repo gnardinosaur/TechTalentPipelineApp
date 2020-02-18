@@ -29,6 +29,11 @@ class Api::V1::UsersController < ApplicationController
     end 
   end
 
+  def update
+    @user = User.find(params[:id])
+    @user.update(cash: params[:user][:cash])
+  end 
+
   def user_transactions
     @user = User.find(params[:id])
     @transactions = @user.transactions

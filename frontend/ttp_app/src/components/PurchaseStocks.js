@@ -34,15 +34,18 @@ class PurchaseStocks extends React.Component {
 
   buyStockOrThrowError = () => {
     //if qty * current stock price < user.cash then fetch, otherwise throw error  
-    const stockPrice = this.props.currentPrices[this.state.buy.ticker];
-    const totalPurchasePrice = formatter.format(this.state.buy.qty * stockPrice);
-    
-    if(totalPurchasePrice < this.props.user.cash) {
-      this.purchaseStock(stockPrice);
-      //update user cash total in App's state 
-      this.props.decreaseCash(totalPurchasePrice);
-    } else {
+    if(this.state.buy.ticker === '') {
       this.setState({ error: true })
+    } else {
+      const stockPrice = this.props.currentPrices[this.state.buy.ticker].lastPrice;
+      const totalPurchasePrice = this.state.buy.qty * stockPrice;
+      if(totalPurchasePrice < parseInt(this.props.user.cash)) {
+        this.purchaseStock(stockPrice);
+        //update user cash total in App's state 
+        this.props.decreaseCash(totalPurchasePrice);
+      } else {
+        this.setState({ error: true })
+      }
     }
   }
 
@@ -79,13 +82,13 @@ class PurchaseStocks extends React.Component {
             <Dropdown onChange={this.handleSelect} placeholder='Ticker' value={this.state.buy.ticker} clearable selection options={tickers} />
           </Form.Field>
           <Form.Field onChange={this.handleChange} >
-            <input name='qty' type='number' min={0} placeholder='Qty' value={this.state.buy.qty}/>
+            <input name='qty' type='number' min={0} placeholder='Qty' value={this.state.buy.qty} />
         </Form.Field>
         <Button className='buy-btn' type='submit'>Buy</Button>
         <Message
           error
-          header='You Need More Cash!'
-          content='Try a smaller amount or shares.'
+          header='You may not have enough Cash, or have chosen a Ticker.'
+          content='Try a smaller amount of shares and/or select a Ticker.'
         />
         </Form>
       </Container>
