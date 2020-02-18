@@ -5,8 +5,14 @@ class Api::V1::StocksController < ApplicationController
     @url = "https://sandbox.iexapis.com/stable/stock/market/batch?symbols=V,AXP,NKE,AAPL,IBM&types=quote&filter=latestPrice&token=#{ENV['IEX_API_SANDBOX']}"
     @response = RestClient.get(@url)
     @data = JSON.parse(@response)
-    byebug
-    render json: @data 
+    
+    # create cleaner hash from API response hash
+    @stock_hash = {}
+    @data.each do |ticker, quote| 
+      @stock_hash[ticker] = quote['quote']['latestPrice']
+    end 
+    
+    render json: @stock_hash
   end
 
 end

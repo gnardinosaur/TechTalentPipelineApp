@@ -1,15 +1,18 @@
 import React from 'react';
-import { Header, List, Container, Grid, Form, Button, Dropdown } from 'semantic-ui-react';
+import { Header, List, Container, Grid, Form, Button, Dropdown, Message } from 'semantic-ui-react';
 import { tickers } from '../constants/tickerDropdown';
+import { formatter } from '../constants/formatCurrency';
 
 class Portfolio extends React.Component {
 
   state = {
-    stocks: [],
+    userStocks: [],
+    stocks: {},
     buy: {
       ticker: '',
       qty: 0
-    }
+    },
+    error: false
   };
 
   componentDidMount = () => {
@@ -19,21 +22,19 @@ class Portfolio extends React.Component {
   };
 
   saveStockData = (stocksObject) => {
-    //turn stock object into arrays for easier manipulation
-    const stocksArray = Object.entries(stocksObject);
-    
-    // this.setState({
-    //   stocks: stocksArray
-    // });
+    this.setState({
+      stocks: stocksObject,
+      error: false
+    });
   };
-
 
   handleSelect = (e, data) => {
     this.setState({
       buy: {
         ...this.state.buy,
         ticker: data.value
-      }
+      },
+      error: false
     })
   };
 
@@ -46,8 +47,20 @@ class Portfolio extends React.Component {
     })
   }
 
-  buyStock = () => {
-    //if qty * price < user.cash then fetch, otherwise error message 
+  buyStockOrThrowError = () => {
+    //if qty * current stock price < user.cash then fetch, otherwise throw error  
+    const stockPrice = this.state.stocks[this.state.buy.ticker];
+    const totalPurchasePrice = formatter.format(this.state.buy.qty * stockPrice);
+    
+    if(totalPurchasePrice < this.props.user.cash) {
+      this.purchaseStock()
+    } else {
+      this.setState({ error: true })
+    }
+  }
+
+  purchaseStock = () => {
+    const stockPrice = this.state.stocks[this.state.buy.ticker];
     fetch('http://localhost:3000/api/v1/transactions',{
       method: 'POST',
       headers: {
@@ -55,21 +68,24 @@ class Portfolio extends React.Component {
         'Accept': 'application/json'
       },
       body: JSON.stringify({
-        stock: this.state.buy
+        stock: this.state.buy,
+        price: stockPrice,
+        user_id: this.props.user.id
+      })
+    })
+    .then(resp => resp.json())
+    .then(newTransaction => {
+      this.setState({
+        userStocks: [...this.state.userStocks, newTransaction],
+        buy: {
+          ticker: '',
+          qty: 0
+        }
       })
     })
   }
 
   render(){
-    console.log(this.state)
-
-    //format currency integer to $USD
-    const formatter = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2
-    });
-
     return (
       <Container className='portfolio'>
         <List as='a' divided={true} horizontal floated='right'>
@@ -91,14 +107,19 @@ class Portfolio extends React.Component {
             <Grid.Column width={5}>
               <Header as='h3' textAlign='left'>Cash - {formatter.format(this.props.user.cash)}</Header>
               <br />
-              <Form onSubmit={this.buyStock}>
+              <Form onSubmit={this.buyStockOrThrowError} error={this.state.error}>
                 <Form.Field>
                   <Dropdown onChange={this.handleSelect} placeholder='Ticker' clearable selection options={tickers} />
                 </Form.Field>
-                <Form.Field onChange={this.handleChange}>
+                <Form.Field onChange={this.handleChange} >
                   <input name='qty' type='number' min={0} placeholder='Qty' />
               </Form.Field>
               <Button className='buy-btn' type='submit'>Buy</Button>
+              <Message
+                error
+                header='You Need More Cash!'
+                content='Try a smaller amount or shares.'
+            />
               </Form>
             </Grid.Column>
           </Grid.Row>
