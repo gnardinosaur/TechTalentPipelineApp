@@ -16,7 +16,7 @@ class UserStocks extends React.Component {
   };
 
   buildUserStockObject = () => {
-    //create a simple object of ticker: number of shares
+    //create a simple object --> {ticker: number of shares}
     const tickersAndQtyObject = {};
     this.state.userStocks.forEach(el => {
       if(tickersAndQtyObject[el.ticker]){
@@ -25,15 +25,23 @@ class UserStocks extends React.Component {
         tickersAndQtyObject[el.ticker] = el.num_shares;
       }
     })
-    // convert the object back to an array with summed up number of shares 
+    //convert the object back to an array with summed number of shares owned by that user 
     const summedArray = Object.entries(tickersAndQtyObject)
     this.setState({ summedArray })
   }
 
   render(){
-    console.log('props', this.props.currentPrices)
-    console.log('state', this.state.summedArray)
     const stockList = this.state.summedArray.map((el, index) => {
+      //change color of text based on lastPrice and PreviousClose --> if lastPrice > PrevClose then green text, if lastPrice < prevClose red text, otherwise gray text
+      let currentPrice;
+      if(this.props.currentPrices[el[0]].lastPrice > this.props.currentPrices[el[0]].prevClose) {
+        currentPrice = <p style={{ color: 'green' }}>{formatter.format(this.props.currentPrices[el[0]].lastPrice * el[1])}</p>
+      } else if (this.props.currentPrices[el[0]].lastPrice === this.props.currentPrices[el[0]].prevClose) {
+        currentPrice = <p style={{ color: 'gray' }}>{formatter.format(this.props.currentPrices[el[0]].lastPrice * el[1])}</p>
+      } else {
+        currentPrice = <p style={{ color: 'red' }}>{formatter.format(this.props.currentPrices[el[0]].lastPrice * el[1])}</p>
+      }
+
       return (
         <List.Item key={index}>
         <Grid columns={3} divided>
@@ -45,7 +53,7 @@ class UserStocks extends React.Component {
               {el[1]} Shares
             </Grid.Column>
             <Grid.Column>
-              {formatter.format(this.props.currentPrices[el[0]] * el[1])}
+              {currentPrice}
             </Grid.Column>
           </Grid.Row>
         </Grid>
