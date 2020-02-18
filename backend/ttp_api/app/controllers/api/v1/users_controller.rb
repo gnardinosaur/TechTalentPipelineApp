@@ -29,6 +29,12 @@ class Api::V1::UsersController < ApplicationController
     end 
   end
 
+  def user_transactions
+    @user = User.find(params[:id])
+    @transactions = @user.transactions
+    render json: @transactions
+  end 
+
   private 
 
   def user_params 
